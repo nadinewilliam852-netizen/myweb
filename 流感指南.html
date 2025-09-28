@@ -1,0 +1,260 @@
+<!-- Chosen Palette: Calm Health -->
+<!-- Application Structure Plan: 我将原报告的线性结构重塑为一个更符合用户探索习惯的交互式应用。应用分为三大核心板块：“认识流感”、“主动预防”和“感染后应对”，通过顶部导航栏实现快速切换。这种结构允许用户根据自身需求（例如，只是想了解症状，或是已经出现症状需要查找应对方法）直接跳转到相关内容，而非从头到尾阅读。通过卡片式布局、交互式图表和清晰的视觉分区，旨在将静态信息转化为一个动态、易于理解的健康指南，提升用户体验和信息吸收效率。 -->
+<!-- Visualization & Content Choices: 报告信息：流感与普通感冒症状对比 -> 目标：对比与告知 -> 呈现方式：使用图标和并排卡片的HTML/CSS布局 -> 交互：无，通过清晰的视觉设计直接传达信息。 报告信息：多种预防措施及其重要性 -> 目标：组织与强调 -> 呈现方式：一个说明性的Chart.js环形图，突出疫苗的核心地位，辅以交互式信息卡片 -> 交互：点击卡片可查看详细说明 -> 理由：图表直观展示了各项措施的相对重要性，卡片交互则避免了信息过载。 报告信息：感染后护理步骤与紧急就医指征 -> 目标：指导与警示 -> 呈现方式：流程化的步骤列表和醒目的警示框 -> 交互：无，重点在于清晰、无干扰地传达关键行动指令。确认未使用SVG或Mermaid.js。 -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交互式流感防控指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">🔬 流感攻防战</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#know" class="nav-link text-gray-600 font-medium pb-1">认识流感</a>
+                <a href="#prevent" class="nav-link text-gray-600 font-medium pb-1">主动预防</a>
+                <a href="#act" class="nav-link text-gray-600 font-medium pb-1">感染后应对</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        
+        <section id="hero" class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">守护健康，远离流感</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">本指南将通过互动的方式，帮助您和您的家人了解如何科学预防流感，以及在不幸感染后如何正确应对。</p>
+        </section>
+
+        <section id="know" class="mb-20 scroll-mt-24">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-2">第一步：正确认识流感</h3>
+            <p class="text-center text-gray-500 mb-12">流感和普通感冒症状相似，但影响大不相同。学会区分是有效应对的第一步。</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-8 border border-blue-100">
+                    <h4 class="text-2xl font-bold text-blue-600 mb-4">流感 (Influenza)</h4>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start"><span class="text-2xl mr-3">🌡️</span> <div><strong class="font-semibold">高热：</strong>体温常超过38°C，突发性强，伴有寒战。</div></li>
+                        <li class="flex items-start"><span class="text-2xl mr-3">🤕</span> <div><strong class="font-semibold">全身症状：</strong>头痛、肌肉酸痛、关节疼痛和极度乏力非常明显。</div></li>
+                        <li class="flex items-start"><span class="text-2xl mr-3">😷</span> <div><strong class="font-semibold">呼吸道症状：</strong>通常表现为干咳和咽痛，但鼻塞流涕相对较轻。</div></li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow p-8 border">
+                    <h4 class="text-2xl font-bold text-gray-600 mb-4">普通感冒 (Common Cold)</h4>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start"><span class="text-2xl mr-3">🤧</span> <div><strong class="font-semibold">体温：</strong>通常为低热或不发热。</div></li>
+                        <li class="flex items-start"><span class="text-2xl mr-3">🚶</span> <div><strong class="font-semibold">全身症状：</strong>较轻微，无明显的全身酸痛或乏力感。</div></li>
+                        <li class="flex items-start"><span class="text-2xl mr-3">💧</span> <div><strong class="font-semibold">呼吸道症状：</strong>以打喷嚏、鼻塞和流涕为主要症状。</div></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="prevent" class="mb-20 scroll-mt-24">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-2">核心环节：主动预防</h3>
+            <p class="text-center text-gray-500 mb-12">预防胜于治疗。构建多层次的“健康防护网”是抵御流感最有效的方式。</p>
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="chart-container">
+                    <canvas id="preventionChart"></canvas>
+                </div>
+                <div>
+                    <div class="space-y-4">
+                        <div class="prevention-card bg-white rounded-lg p-6 shadow cursor-pointer border border-transparent hover:border-blue-500">
+                            <h5 class="font-bold text-lg mb-1">💉 核心防御：接种疫苗</h5>
+                            <p class="details hidden text-gray-600">每年接种最新的流感疫苗是预防流感及其严重并发症的最有效手段，尤其推荐儿童、老人和慢性病患者接种。</p>
+                        </div>
+                        <div class="prevention-card bg-white rounded-lg p-6 shadow cursor-pointer border border-transparent hover:border-blue-500">
+                            <h5 class="font-bold text-lg mb-1">🧼 日常防护：卫生习惯</h5>
+                            <p class="details hidden text-gray-600">使用“七步洗手法”并用肥皂和流动水洗手至少20秒；在人群密集场所规范佩戴口罩；保持安全社交距离。</p>
+                        </div>
+                        <div class="prevention-card bg-white rounded-lg p-6 shadow cursor-pointer border border-transparent hover:border-blue-500">
+                            <h5 class="font-bold text-lg mb-1">🏠 环境与生活：巩固基础</h5>
+                            <p class="details hidden text-gray-600">每日开窗通风，保持空气流通。均衡饮食、充足睡眠、适度锻炼，全面提升身体免疫力。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="act" class="scroll-mt-24">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-2">紧急预案：感染后如何应对</h3>
+            <p class="text-center text-gray-500 mb-12">如果不幸感染，科学的应对措施能帮助您更快康复，并保护家人。</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h4 class="text-2xl font-bold text-gray-800 mb-6">居家护理四部曲</h4>
+                    <ol class="list-decimal list-inside space-y-4 text-gray-700">
+                        <li><strong class="font-semibold">立即隔离与休息：</strong>出现症状后立即居家，保证充足睡眠，减少外出活动以防传染。</li>
+                        <li><strong class="font-semibold">补充足量水分：</strong>多喝水或电解质饮料，防止因发烧导致脱水。</li>
+                        <li><strong class="font-semibold">科学对症用药：</strong>遵医嘱使用退烧药。切勿滥用抗生素，它对病毒无效。</li>
+                        <li><strong class="font-semibold">密切监测病情：</strong>留意体温和症状变化，尤其是老人和儿童。</li>
+                    </ol>
+                </div>
+                <div class="bg-red-50 rounded-xl shadow-lg p-8 border-2 border-red-200">
+                    <h4 class="text-2xl font-bold text-red-600 mb-6">⚠️ 紧急就医指引</h4>
+                    <p class="mb-4 text-gray-700">当出现以下任何一种重症预警信号时，请立即就医：</p>
+                    <ul class="space-y-2 text-red-800 font-medium">
+                        <li>▶ 持续高热不退（超过3天）</li>
+                        <li>▶ 出现呼吸困难、胸闷或气短</li>
+                        <li>▶ 精神萎靡、嗜睡或烦躁不安</li>
+                        <li>▶ 严重呕吐、腹泻，导致脱水</li>
+                        <li>▶ 原有的基础疾病明显加重</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-20 border-t">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-500">
+            <p class="font-bold text-lg text-gray-800 mb-2">从我做起，构筑健康防线</p>
+            <p>本指南根据常见疾病防控知识制作，内容仅供参考，不能替代专业医疗建议。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 120) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            const preventionCards = document.querySelectorAll('.prevention-card');
+            preventionCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const details = card.querySelector('.details');
+                    details.classList.toggle('hidden');
+                });
+            });
+
+            const ctx = document.getElementById('preventionChart').getContext('2d');
+            const preventionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['接种疫苗', '卫生习惯', '健康生活'],
+                    datasets: [{
+                        label: '流感预防措施有效性贡献（示意）',
+                        data: [60, 25, 15],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(249, 115, 22, 0.8)',
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(249, 115, 22, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: '各项预防措施的重要性（示意）',
+                            font: {
+                                size: 16
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
